@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grindrod Tracking</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://kit.fontawesome.com/365cb50038.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://sinay.fr/js/v1/sinay.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVC2e6dDPYmiwfSlggNEiMKNQiXjaB-s8&callback=initMap" async defer></script>
+</head>
+
+
+
+
+
+<body>
+    
+    <div class="navbar">
+        <img class="logo"  src="/static/grindrod-logo-color.svg" alt="" height="30">
+        <a href="/">Container Tracking</a>
+        <a href="/vessel_simulations">Vessel Simulations</a>
+        <a href="#">Load Calculator</a>
+        <a href="#">Distance and Time</a>
+        <a href="#">Document Management</a>
+    </div>
+
+
+    <div class="box">
+      <div class="search-box">
+          <form id="containerForm" onsubmit="submitForm(event)">
+              <input type="text" name="container_number" placeholder="Search by Container or Booking no..." required>
+              <button type="submit">
+                  <i class="fa-solid fa-magnifying-glass fa-xl"></i>
+              </button>
+          </form>
+      </div>
+      <div class="popup" id="result">    
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar hidden">
+          <div class="progress" id="progress"></div>
+        </div>
+      </div>
+      
+      <span id="days-left"></span>
+      <div id="location-result"></div>
+    </div>
+    <div id="map"></div>
+
+
+    <script>
+      function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+      }
+    
+      function calculateProgress(lastEventDate, nextEventDate) {
+        const lastEvent = new Date(lastEventDate);
+        const nextEvent = new Date(nextEventDate);
+        const now = new Date();
+    
+        const totalDuration = nextEvent - lastEvent;
+        const elapsedDuration = now - lastEvent;
+    
+        return (elapsedDuration / totalDuration) * 100;
+      }
+    
+      function updateProgressBar(lastEventDate, nextEventDate) {
+        const progress = document.getElementById('progress');
+        const progressPercentage = calculateProgress(lastEventDate, nextEventDate);
+        console.log('Progress Percentage:', progressPercentage);
+        progress.style.width = progressPercentage + '%';
+    
+        const now = new Date();
+        const nextEvent = new Date(nextEventDate);
+        const timeRemaining = nextEvent - now;
+    
+        // Convert the time difference to days
+        const daysRemaining = Math.ceil(timeRemaining / (1000 * 60 * 60 * 24));
+    
+        // Update the "days-left" element
+        const daysLeftElement = document.getElementById('days-left');
+        daysLeftElement.textContent = daysRemaining > 0 ? `${daysRemaining} days left` : 'Voyage completed';
+      }
+
+      let map;
+    
+      function submitForm(event) {
+        event.preventDefault();
+    
+        const containerNumber = document.querySelector('input[name="container_number"]').value;
+    
+        fetch('/status', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: 'container_number=' + containerNumber
+  })
+  .then(response => response.json())
+  .then(data => {
+    const resultDiv = document.getElementById('result');
+
+    if (data.containerId) {
+      resultDiv.classList.remove('transparent');
+      resultDiv.classList.add('white-background');
+
+      resultDiv.innerHTML = `
+        <p class="container-id">${data.containerId}</p>
+        <p class="event-date-o">${formatDate(data.lastEvent.date)}</p>
+        <p class="event-location-o">${data.lastEvent.location}</p>
+        
+        <p class="event-date-d">${data.nextEvent ? formatDate(data.nextEvent.date) : ''}</p>
+        <p class="event-location-d">${data.nextEvent ? data.nextEvent.location : 'Voyage Complete'}</p>
+      `;
+
+      console.log(typeof data.lastEvent.location);
+      
+
+      //updateProgressBar(data.lastEvent.date, data.nextEvent.date);
+
+      const progressBar = document.querySelector('.progress-bar');
+      progressBar.classList.remove('hidden');
+
+      fetch('/location', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'container_number=' + containerNumber
+      })
+      .then(response => response.json())
+      .then(data => {
+        
+        console.log('API Response:', data);
+        const locationDiv = document.getElementById('location-result');
+        const latitude = data.location.latitude;
+        const longitude = data.location.longitude;
+        
+        if (latitude && longitude) {
+          
+          addMarkerToMap(latitude, longitude);
+        } else {
+          locationDiv.innerHTML = '<p>No location data found for the provided container number.</p>';
+        }
+
+        
+      })
+      .catch(error => console.error('Error fetching location data:', error));
+    } else {
+      resultDiv.innerHTML = '<p>No data found for the provided container number.</p>';
+    }
+  })
+  .catch(error => console.error('Error fetching status data:', error));
+}
+
+function addMarkerToMap(latitude, longitude) {
+    const markercontainer = new google.maps.Marker({
+      position: { lat: latitude, lng: longitude },
+      map: map,
+      title: 'Container Location'
+    });
+  }
+</script>
+  <script>
+      // Custom map styles
+      const customStyles = [
+        {
+          featureType: "water",
+          elementType: "geometry",
+          stylers: [
+            { color: "#ffffff" } // Replace with your desired color for water bodies
+          ],
+        },
+        {
+          featureType: "landscape",
+          elementType: "geometry",
+          stylers: [
+            { color: "#103856" }, // Set the color of terrain (landscape) to light gray
+          ],
+        },
+        {
+          featureType: "road",
+          elementType: "geometry",
+          stylers: [
+            { color: "#E21F26" }, // Replace with your desired color for roads
+            { visibility: "simplified" },
+          ],
+        },
+        // Add more styling rules as needed for other map features
+      ];
+
+      // Initialize and display the map
+      function initMap() {
+        const myLatLng = { lat: -29.861255774278323, lng: 31.023290711436125 }; // Replace with your preferred location
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: myLatLng,
+          zoom: 5.5, // You can adjust the zoom level as per your requirements
+          styles: customStyles, // Apply custom styles to the map
+          streetViewControl: false
+        });
+        const marker1 = new google.maps.Marker({
+          position: myLatLng,
+          map: map,
+          title: "Grindrod House", // Replace with a custom marker title if needed
+        });
+        addMarkerToMap(marker1);
+
+      }
+    </script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+  overflow: hidden;
+  font-family: 'Segoe UI';
+}
+
+.navbar {
+  background-color: #ffff;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 10vh;
+  z-index: 1000;
+  border-bottom: 2px solid #E21F26;
+}
+
+.navbar a {
+  margin-right: 20px;
+  text-decoration: none; 
+  color: #103856;
+}
+
+.navbar a:hover {
+  color: #E21F26; /* Set the text color to red on hover */
+  transition: color 0.5s ease; /* Transition the color change over 2.5 seconds */
+}
+
+.logo{
+  height: 60px;
+  position: absolute;
+  z-index: 2;
+  left: 2%;
+}
+
+/* Container Tracking Page-------------------------------------------------------------------------------------------------------------------------------- */
+
+.box{
+  background-color: #103856;
+  z-index: 1;
+  top: 10vh;
+  height: 90vh;
+  width: 30%;
+  overflow-y: hidden;
+  
+}
+
+.search-box {
+  position: absolute; /* Position the search box inside the box */
+  top: 20%; /* Vertically center the search box */
+  left: 5%; /* Horizontally center the search box */
+  width: 20%; /* Adjust the width of the search box */
+  height: 40px; /* Adjust the height of the search box */
+  background-color: #ffffff; /* Set the background color of the search box */
+  border-radius: 5px; /* Add rounded corners to the search box */
+  padding: 2px; /* Add some padding inside the search box */
+  z-index: 2;
+}
+
+.search-box input {
+  width: 85%;
+  height: 80%;
+  position: absolute;
+  justify-self: center;
+  margin: 2px;
+  border: none;
+  background-color: transparent; /* Make the input background transparent */
+  font-size: 16px; /* Adjust the font size of the input text */
+}
+
+#container-info{
+  color: #ffffff;
+}
+
+.search-box button {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  height: 100%;
+  border-radius: 5px;
+  padding: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+#result {
+  background-color: rgba(255, 255, 255, 0); /* Set background color to white */
+  color: rgb(255, 255, 255); /* Set text color to black (you can use 'white' if you prefer white text) */
+  padding: 10px; /* Optional: Add some padding to make it look better */
+  position: absolute;
+  display: flex;
+  margin-top: 10%;
+  margin-left: 2%;
+  height: 120px;
+  width: 25%;
+  border-radius: 5px;
+}
+
+#result.white-background {
+  background-color: rgba(255, 255, 255, 0); /* Set background color to white when the 'white-background' class is applied */
+  outline: 1px solid #ffffff;
+}
+
+.container-id{
+  font-family: 'Segoe UI';
+  font-weight: 600;
+  position: absolute;
+  top: 5%;
+  left: 2.5%;
+  cursor: none;
+}
+
+.event-date-o{
+  font-family: 'Segoe UI';
+  display: flex;
+  position: absolute;
+  top: 25%;
+  left: 30%;
+  font-weight: 100;
+  cursor: none;
+}
+
+.event-location-o{
+  font-family: 'Segoe UI';
+  display: flex;
+  position: absolute;
+  top: 5%;
+  left: 30%;
+  font-weight: 600;
+  cursor: none;
+}
+
+.event-location-d{
+  font-family: 'Segoe UI';
+  display: flex;
+  position: absolute;
+  top: 5%;
+  left: 75%;
+  font-weight: 600;
+  cursor: none;
+}
+
+.event-date-d{
+  font-family: 'Segoe UI';
+  display: flex;
+  position: absolute;
+  top: 25%;
+  left: 75%;
+  font-weight: 100;
+  cursor: none;
+}
+
+.hidden {
+  display: none;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-bar {
+  height: 5px;
+  background-color: rgba(255, 255, 255, 0.205); /* Gray background for the progress bar */
+  border-radius: 5px;
+  margin-top: 49%;
+  overflow: hidden; 
+  width: 55%;
+  margin-left: 26%;
+  position: relative;
+}
+
+.progress-bar .progress {
+  height: 100%;
+  background-color: rgb(255, 255, 255); /* Red color for the progress bar */
+  z-index: 10;
+  width: 100%;
+}
+
+#days-left{
+  color: #ffffff;
+  font: 'Segoe UI';
+  margin-left: 50%;
+  top: 1.5%;
+  position: relative;
+  font-weight: 100;
+}
+
+#location-result {
+  margin-top: 100px;
+  padding: 10px;
+  border: 1px solid #ffffff00;
+  color: #ffffff;
+  left: 0;
+}
+
+#map {
+  height: 90vh;
+  width: calc(70%);
+  right: 0;
+  position: absolute;
+  top: calc(10vh + 2px);
+}
+
+
+
+
+/* Vessel Simulations Page -------------------------------------------------------------------------------------------------------------------------------- */
+
+.linkbox{
+  background-color: #103856;
+  z-index: 1;
+  top: 10vh;
+  height: 90vh;
+  width: 20%;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column; /* Set the flex direction to column */
+  align-items: left; /* Center the links horizontally */
+  padding-top: 2%;
+  gap: 20px;
+}
+
+.linkbox a{
+  top: 0;
+  margin-left: 10%;
+  color: #ffffff;
+  text-decoration: none;
+  font: 'Segoe UI';
+
+}
+
+.linkbox a:hover {
+  color: #E21F26; /* Set the text color to red on hover */
+  transition: color 0.5s ease; /* Transition the color change over 2.5 seconds */
+}
+
+.simbox{
+  position: absolute;
+  height: 90vh;
+  width: 80vw;
+  top: 10vh;
+  margin-left: 20vw;
+}
+
+#plotMooringTension{
+  left: 0;
+  width: 80vw;
+}
+

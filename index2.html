@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Geocoder</title>
+</head>
+<body>
+    <div id="map" style="height: 100vh"></div>
+    <!-- Replace YOUR_API_KEY with your actual API key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVC2e6dDPYmiwfSlggNEiMKNQiXjaB-s8&libraries=places"></script>
+    <script>
+        
+        // Function to perform geocoding and add a marker to the map
+        function geocodeAddress() {
+            // Replace this variable with the address you want to geocode
+            var address = data.lastEvent.location;
+
+            // Create a new instance of Geocoder
+            var geocoder = new google.maps.Geocoder();
+
+            // Create a new instance of the map
+            var mapOptions = {
+                zoom: 15,
+                center: { lat: 0, lng: 0 }, // Center the map at 0,0 initially
+            };
+            var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+            // Perform geocoding
+            geocoder.geocode({ 'address': address }, function (results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    // Get latitude and longitude from the first result
+                    var latitude = results[0].geometry.location.lat();
+                    var longitude = results[0].geometry.location.lng();
+
+                    // Create a marker and set its position
+                    var marker = new google.maps.Marker({
+                        position: { lat: latitude, lng: longitude },
+                        map: map, // Set the marker on the map
+                        title: "Marker Title" // Set a title for the marker (optional)
+                    });
+
+                    // Center the map on the marker's position
+                    map.setCenter(marker.getPosition());
+                } else {
+                    console.log("Geocode was not successful for the following reason: " + status);
+                }
+            });
+        }
+
+        // Call the geocodeAddress function when the page loads
+        window.onload = geocodeAddress;
+    </script>
+</body>
+</html>
